@@ -7,12 +7,22 @@ class ProductoController {
   // @route   GET /api/productos
   async getProductos(req, res) {
     try {
-      const productos = await Producto.find();
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+
+      const skip = (page - 1) * limit;
+
+      const productos = await Producto.find().skip(skip).limit(limit);
+
+      const total = await Producto.countDocuments();
+
       res.json({
-        productos: productos,
-        total: productos.length,
-        skip: 0,
-        limit: 10,
+        productos,
+        total,
+        skip,
+        limit,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
       res.status(500).json({ error: "Server error" });
@@ -39,6 +49,19 @@ class ProductoController {
     try {
       const producto = await Producto.create(req.body);
       res.status(201).json(producto);
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+
+  // @desc    Create multiple products
+  // @route   POST /api/productos/bulk
+  // @access  Public
+  async createProductos(req, res) {
+    try {
+      const productos = req.body; // asume que recibes un array de productos en el cuerpo de la solicitud
+      const nuevosProductos = await Producto.create(productos);
+      res.status(201).json(nuevosProductos);
     } catch (error) {
       res.status(500).json({ error: "Server error" });
     }
@@ -84,14 +107,32 @@ class ProductoController {
   async searchProductos(req, res) {
     try {
       const { search } = req.query;
-      const productos = await Producto.find({
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+
+      const skip = (page - 1) * limit;
+
+      const query = {
         $or: [
           { title: { $regex: search, $options: "i" } },
           { description: { $regex: search, $options: "i" } },
         ],
+      };
+
+      const productos = await Producto.find(query).skip(skip).limit(limit);
+
+      const total = await Producto.countDocuments(query);
+
+      res.json({
+        productos,
+        total,
+        skip,
+        limit,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
       });
-      res.json(productos);
     } catch (error) {
+      console.error(error);
       res.status(500).json({ error: "Server error" });
     }
   }

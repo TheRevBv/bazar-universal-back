@@ -10,12 +10,13 @@ class ProductoRouter {
   }
 
   initializeRoutes() {
+    this.router.get("/search", this.productoController.searchProductos); // Cambié la ruta aquí
     this.router.get("/", this.productoController.getProductos);
     this.router.get("/:id", this.productoController.getProducto);
     this.router.post("/", this.productoController.createProducto);
+    this.router.post("/bulk", this.productoController.createProductos);
     this.router.put("/:id", this.productoController.updateProducto);
     this.router.delete("/:id", this.productoController.deleteProducto);
-    this.router.get("/", this.productoController.searchProductos);
   }
 
   getRouter() {

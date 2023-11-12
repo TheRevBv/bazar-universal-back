@@ -8,6 +8,7 @@ const productoSchema = new Schema({
     type: String,
     required: true,
     trim: true,
+    unique: true,
   },
   description: {
     type: String,
@@ -15,6 +16,7 @@ const productoSchema = new Schema({
   },
   price: {
     type: Number,
+    require: true,
   },
   discountPercentage: {
     type: Number,
