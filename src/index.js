@@ -1,11 +1,16 @@
 // Desc: Main entry point for the application
 // const express = require("express"); // CommonJS
-import express from "express";
-import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
 import router from "./routes/routes.js";
 
 const app = express();
+
+dotenv.config();
+
+app.use(cors());
 
 // Connect Database
 connectDB();

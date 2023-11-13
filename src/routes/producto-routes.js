@@ -10,7 +10,7 @@ class ProductoRouter {
   }
 
   initializeRoutes() {
-    this.router.get("/search", this.productoController.searchProductos); // Cambié la ruta aquí
+    // this.router.get("/search", this.productoController.searchProductos); // Cambié la ruta aquí
     this.router.get("/", this.productoController.getProductos);
     this.router.get("/:id", this.productoController.getProducto);
     this.router.post("/", this.productoController.createProducto);

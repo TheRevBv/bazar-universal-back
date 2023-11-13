@@ -7,14 +7,23 @@ class ProductoController {
   // @route   GET /api/productos
   async getProductos(req, res) {
     try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
+      let { search, limit, page } = req.query;
+      page = parseInt(page) || 1;
+      limit = parseInt(limit) || 10;
+      search = search || "";
 
       const skip = (page - 1) * limit;
 
-      const productos = await Producto.find().skip(skip).limit(limit);
+      const query = {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      };
 
-      const total = await Producto.countDocuments();
+      const productos = await Producto.find(query).skip(skip).limit(limit);
+
+      const total = await Producto.countDocuments(query);
 
       res.json({
         productos,
@@ -25,7 +34,8 @@ class ProductoController {
         totalPages: Math.ceil(total / limit),
       });
     } catch (error) {
-      res.status(500).json({ error: "Server error" });
+      console.error(error);
+      res.status(500).json({ error: `Server error ${error}` });
     }
   }
 
@@ -104,7 +114,7 @@ class ProductoController {
 
   // @desc    Search products
   // @route   GET /api/productos
-  async searchProductos(req, res) {
+  /* async searchProductos(req, res) {
     try {
       const { search } = req.query;
       const page = parseInt(req.query.page) || 1;
@@ -135,7 +145,7 @@ class ProductoController {
       console.error(error);
       res.status(500).json({ error: "Server error" });
     }
-  }
+  } */
 }
 
 export default ProductoController;
